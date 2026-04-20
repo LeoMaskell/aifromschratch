@@ -2,7 +2,7 @@ import numpy as np
 # XOR NN from scratch
 # 2:relu:4:sigmoid:1
 
-lr = 0.1
+lr = 0.5
 
 
 # sigmoid function
