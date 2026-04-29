@@ -30,7 +30,7 @@ for i in range(10000):
     z2 = np.dot(a1, w2) + b2
     a2 = sigmoid(z2)  # the prediction from the net
 
-    print(f"random preds: {a2}")
+    print(f"preds: {a2}")
 
     # backprop
     # derivative of mse = 2(a2 - y) over n -->(4)
@@ -55,3 +55,34 @@ for i in range(10000):
 
     if i % 1000 == 0:
         print(f"loss: {loss}")
+
+x1 = np.linspace(0, 1, 100)
+x2 = np.linspace(0, 1, 100)
+
+xvals = np.meshgrid(x1, x2)
+
+xvals = np.column_stack((xvals[0].ravel(), xvals[1].ravel()))
+
+z1 = np.dot(xvals, w1) + b1
+a1 = np.maximum(0, z1) # relu
+z2 = np.dot(a1, w2) + b2
+a2 = sigmoid(z2)  # the prediction from the net
+
+print(f"graph preds: {a2}")
+
+"""
+    loss = np.mean((a2 - y) ** 2)  # mse
+    print(f"loss: {loss}")
+
+    if i % 1000 == 0:
+        print(f"loss: {loss}")
+"""
+
+
+output = a2.reshape(100, 100)
+# print(output.shape)
+import matplotlib.pyplot as plt
+plt.contourf(x1, x2, output, levels=50, cmap='RdPu')
+plt.colorbar()
+plt.scatter([0,0,1,1], [0,1,0,1], c=[0,1,1,0], cmap='RdPu', edgecolors='black', s=100)
+plt.show()
