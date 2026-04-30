@@ -32,7 +32,7 @@ b2 = np.random.randn(1, 1) * 0.1
 
 # print(w1, b1, w2, b2)
 
-for i in range(10000):
+for i in range(500000):
     # forward pass
     z1 = np.dot(x, w1) + b1
 #    a1 = np.maximum(0, z1) # ReLU
