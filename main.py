@@ -2,7 +2,7 @@ import numpy as np
 # XOR NN from scratch
 # 2:relu:4:sigmoid:1
 
-lr = 0.5
+lr = 0.8
 
 
 # sigmoid function
@@ -10,6 +10,15 @@ def sigmoid(val):
     value = (np.exp(-val) + 1) ** -1
     return value  # sigmoid(0) = 0.5
 
+# leaky ReLU func
+def LRELU(val, alpha = 0.01):
+    value = np.maximum(alpha*val, val)
+    return value
+
+# leaky ReLU deriv func
+def DLRELU(val, alpha = 0.01):
+    value = np.where(val>0, 1, alpha)
+    return value
 
 # inputs:
 x = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
@@ -26,7 +35,8 @@ b2 = np.random.randn(1, 1) * 0.1
 for i in range(10000):
     # forward pass
     z1 = np.dot(x, w1) + b1
-    a1 = np.maximum(0, z1)
+#    a1 = np.maximum(0, z1) # ReLU
+    a1 = LRELU(z1) # LRELU
     z2 = np.dot(a1, w2) + b2
     a2 = sigmoid(z2)  # the prediction from the net
 
@@ -41,7 +51,8 @@ for i in range(10000):
     dL_dw2 = np.dot(a1.T, dL_dz2)
     dL_db2 = np.sum(dL_dz2, axis=0, keepdims=True)
     dL_da1 = np.dot(dL_dz2, w2.T)
-    dL_dz1 = dL_da1 * (z1 > 0)
+ #   dL_dz1 = dL_da1 * (z1 > 0) # relu
+    dL_dz1 = dL_da1 * DLRELU(z1) # DLRELU
     dL_dw1 = np.dot(x.T, dL_dz1)
     dL_db1 = np.sum(dL_dz1, axis=0, keepdims=True)
 
@@ -64,7 +75,7 @@ xvals = np.meshgrid(x1, x2)
 xvals = np.column_stack((xvals[0].ravel(), xvals[1].ravel()))
 
 z1 = np.dot(xvals, w1) + b1
-a1 = np.maximum(0, z1) # relu
+a1 = np.maximum(0, z1) # ReLU
 z2 = np.dot(a1, w2) + b2
 a2 = sigmoid(z2)  # the prediction from the net
 
