@@ -2,7 +2,7 @@ import numpy as np
 # XOR NN from scratch
 # 2:relu:4:sigmoid:1
 
-lr = 0.8
+lr = 0.85
 
 
 # sigmoid function
@@ -11,12 +11,12 @@ def sigmoid(val):
     return value  # sigmoid(0) = 0.5
 
 # leaky ReLU func
-def LRELU(val, alpha = 0.01):
+def LRELU(val, alpha = 0.015):
     value = np.maximum(alpha*val, val)
     return value
 
 # leaky ReLU deriv func
-def DLRELU(val, alpha = 0.01):
+def DLRELU(val, alpha = 0.015):
     value = np.where(val>0, 1, alpha)
     return value
 
@@ -32,7 +32,7 @@ b2 = np.random.randn(1, 1) * 0.1
 
 # print(w1, b1, w2, b2)
 
-for i in range(500000):
+for i in range(250000):
     # forward pass
     z1 = np.dot(x, w1) + b1
 #    a1 = np.maximum(0, z1) # ReLU
