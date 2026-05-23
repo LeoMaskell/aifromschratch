@@ -1,0 +1,80 @@
+import streamlit as st
+import numpy as np
+import matplotlib.pyplot as plt
+
+st.title("XOR Neural Network")
+
+
+# --- Neural net setup ---
+def sigmoid(val):
+    return (np.exp(-val) + 1) ** -1
+
+
+def LRELU(val, alpha=0.015):
+    return np.maximum(alpha * val, val)
+
+
+def DLRELU(val, alpha=0.015):
+    return np.where(val > 0, 1, alpha)
+
+
+x = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+y = np.array([[0], [1], [1], [0]])
+
+lr = 0.85
+epochs = 25000
+
+np.random.seed(42)
+w1 = np.random.randn(2, 4) * 0.1
+b1 = np.random.randn(1, 4) * 0.1
+w2 = np.random.randn(4, 1) * 0.1
+b2 = np.random.randn(1, 1) * 0.1
+
+# --- Training ---
+for i in range(epochs):
+    z1 = np.dot(x, w1) + b1
+    a1 = LRELU(z1)
+    z2 = np.dot(a1, w2) + b2
+    a2 = sigmoid(z2)
+
+    dL_da2 = (a2 - y) / 2
+    da2_dz2 = a2 * (1 - a2)
+    dL_dz2 = dL_da2 * da2_dz2
+    dL_dw2 = np.dot(a1.T, dL_dz2)
+    dL_db2 = np.sum(dL_dz2, axis=0, keepdims=True)
+    dL_da1 = np.dot(dL_dz2, w2.T)
+    dL_dz1 = dL_da1 * DLRELU(z1)
+    dL_dw1 = np.dot(x.T, dL_dz1)
+    dL_db1 = np.sum(dL_dz1, axis=0, keepdims=True)
+
+    w1 -= lr * dL_dw1
+    w2 -= lr * dL_dw2
+    b1 -= lr * dL_db1
+    b2 -= lr * dL_db2
+
+
+loss = np.mean((a2 - y) ** 2)
+st.write(f"Final loss: {loss:.6f}")
+
+
+x1 = np.linspace(0, 1, 100)
+x2 = np.linspace(0, 1, 100)
+
+xvals = np.meshgrid(x1, x2)
+
+xvals = np.column_stack((xvals[0].ravel(), xvals[1].ravel()))
+
+z1 = np.dot(xvals, w1) + b1
+a1 = np.maximum(0, z1)  # ReLU
+z2 = np.dot(a1, w2) + b2
+a2 = sigmoid(z2)  # the prediction from the net
+
+output = a2.reshape(100, 100)
+
+fig, ax = plt.subplots()
+cf = ax.contourf(x1, x2, output, levels=100, cmap="GnBu")
+fig.colorbar(cf)
+ax.scatter(
+    [0, 0, 1, 1], [0, 1, 0, 1], c=[0, 1, 1, 0], cmap="GnBu", edgecolors="Black", s=100
+)
+st.pyplot(fig)
